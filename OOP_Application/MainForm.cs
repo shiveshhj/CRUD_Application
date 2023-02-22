@@ -10,11 +10,17 @@ using System.Windows.Forms;
 
 namespace OOP_Application
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
+        }
+
+        private void addButton_Click(object sender, EventArgs e)
+        {
+            AddForm addForm = new AddForm();
+            addForm.ShowDialog();
         }
     }
 }
