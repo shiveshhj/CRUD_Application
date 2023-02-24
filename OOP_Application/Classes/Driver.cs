@@ -9,7 +9,12 @@ namespace OOP_Application
     class Driver : Human
     {
         [Flags]
-        public enum DrivingCategory { A = 1, B = 2, C = 4, D = 8, F = 16, I = 32, PPL = 64, FAA = 128 };
-        private DrivingCategory drivingCategories;
+        public enum DrivingCategory { A, B, C, D, F, I, PPL, FAA };
+        private DrivingCategory drivingCategory;
+
+        public Driver(DrivingCategory _drivingCategory, string _name, int _age) : base(_name, _age)
+        {
+            this.drivingCategory = _drivingCategory;
+        }
     }
 }

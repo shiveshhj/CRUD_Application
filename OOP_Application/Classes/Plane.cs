@@ -10,5 +10,10 @@ namespace OOP_Application
     {
         public enum PlaneType { Passenger, Cargo, Millitary };
         private PlaneType planeType;
+        public Plane(PlaneType _planeType, int _flyingHeight, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :
+                base(_flyingHeight, _brand, _price, _year, _seatsAmount, _driver, _passengers)
+        {
+            this.planeType = _planeType;
+        }
     }
 }

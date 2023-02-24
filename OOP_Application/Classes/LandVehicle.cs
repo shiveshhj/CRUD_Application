@@ -10,5 +10,12 @@ namespace OOP_Application
     {
         protected int wheelsAmount;
         private int horsePower;
+
+        public LandVehicle(int _wheelsAmount, int _horsePower, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :
+                      base(_brand, _price, _year, _seatsAmount, _driver, _passengers)
+        {
+            this.wheelsAmount = _wheelsAmount;
+            this.horsePower = _horsePower;
+        }
     }
 }

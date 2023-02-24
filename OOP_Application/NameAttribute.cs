@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    abstract class Human
+    [AttributeUsage(AttributeTargets.Field)]
+    class NameAttribute : System.Attribute
     {
-        protected string name;
-        protected int age;
-        public Human(string _name, int _age)
+        private string name;
+        public NameAttribute(string _name)
         {
             this.name = _name;
-            this.age = _age;
         }
     }
 }

@@ -9,5 +9,9 @@ namespace OOP_Application
     class Passenger : Human
     {
         private int bagWeight;
+        public Passenger(int _bagWeight, string _name, int _age) : base(_name, _age)
+        {
+            this.bagWeight = _bagWeight;
+        }
     }
 }
