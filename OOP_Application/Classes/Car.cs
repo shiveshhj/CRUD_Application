@@ -12,6 +12,8 @@ namespace OOP_Application
         [Name("Car type")]
         private CarType carType;
 
+
+        public Car() { }
         public Car(CarType _carType, int _wheelsAmount, int _horsePower, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :
               base(_wheelsAmount, _horsePower, _brand, _price, _year, _seatsAmount, _driver, _passengers)
         {

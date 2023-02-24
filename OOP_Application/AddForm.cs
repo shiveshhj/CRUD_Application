@@ -7,28 +7,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace OOP_Application
 {
     public partial class AddForm : Form
     {
-        private Label brandLabel = new Label();
+        /*private Label brandLabel = new Label();
         private Label priceLabel = new Label();
         private Label seatsLabel = new Label();
         private Label yearLabel = new Label();
         private Label driverLabel = new Label();
-        private Label passengersLabel = new Label();
         private Label nameLabel = new Label();
         private Label ageLabel = new Label();
-        private Label categoriesLabel = new Label();
+        private Label categoriesLabel = new Label();*/
+        private Label passengersLabel = new Label();
 
-        private TextBox brandTextBox = new TextBox(); 
+        /*private TextBox brandTextBox = new TextBox(); 
         private NumericUpDown priceNumericUpDown = new NumericUpDown(); 
         private NumericUpDown seatsNumericUpDown = new NumericUpDown();
         private NumericUpDown yearNumericUpDown = new NumericUpDown();
         private TextBox nameTextBox = new TextBox();
         private NumericUpDown ageNumericUpDown = new NumericUpDown();
-        private ComboBox categoryComboBox = new ComboBox();
+        private ComboBox categoryComboBox = new ComboBox();*/
 
         public AddForm()
         {
@@ -39,7 +40,7 @@ namespace OOP_Application
         {
             labelsPanel.Controls.Add(label);
             label.Dock = DockStyle.Top;
-            label.Font = new Font("Century Gothic", fontSize, ((FontStyle)((fontStyle | FontStyle.Italic))), GraphicsUnit.Point, ((byte)(204)));
+            label.Font = new Font("Century Gothic", fontSize, fontStyle | FontStyle.Italic, GraphicsUnit.Point, ((byte)(204)));
             label.Location = new Point(0, 0);
             label.Name = name + "label";
             label.Size = new Size(223, 50);
@@ -76,8 +77,8 @@ namespace OOP_Application
         private void CreateComboBox(ComboBox comboBox, string name, string[] items, int count)
         {
             fieldsPanel.Controls.Add(comboBox);
-            comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            comboBox.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox.Font = new Font("Century Gothic", 12F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(204)));
             comboBox.FormattingEnabled = true;
             comboBox.Items.AddRange(items);
             comboBox.Location = new Point(0, 46 + 36 * count + (count > 0 ? 15 * count : 0));
@@ -87,26 +88,73 @@ namespace OOP_Application
             fieldsPanel.Controls.SetChildIndex(comboBox, 0);
         }
 
+        private void CreateControl(FieldInfo field, ref int count)
+        {
+            if (field.FieldType == typeof(String))
+            {
+                CreateTextBox(new TextBox(), field.Name, count++);
+                return;
+            }
+            if (field.FieldType == typeof(int))
+            {
+                CreateNumericUpDown(new NumericUpDown(), field.Name, Int32.MaxValue, count++);
+                return;
+            }
+            if (field.FieldType == typeof(Car.CarType))
+            {   
+                CreateComboBox(new ComboBox(), field.Name, new string[] { "Hatchback", "Sedan", "Pickup", "Coupe", "Minivan", "StationWagon" }, count++);
+            }
+            else
+            {
+                CreateComboBox(new ComboBox(), field.Name, new string[] { "Passenger", "Cargo", "Millitary" }, count++);
+            }
+        }
+
+        private void CreateSpecificControls(ref int count)
+        {
+            FieldInfo[] thisFields = GetThisFields();
+            foreach (var field in thisFields)
+            {
+                object[] MyAttribute = field.GetCustomAttributes(typeof(NameAttribute), false);
+                CreateLabel(new Label(), ((NameAttribute)(MyAttribute[0])).Name, 13.8F, FontStyle.Bold);
+                CreateControl(field, ref count);
+            }
+        }
+
+        private FieldInfo[] GetThisFields()
+        {
+            Type type = Type.GetType("OOP_Application." + typeComboBox.Text);
+            var obj = Activator.CreateInstance(type);
+            var allFields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            var baseFileds = obj.GetType().BaseType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo[] thisFields = new FieldInfo[allFields.Length - baseFileds.Length];
+            for (int i = 0; i < thisFields.Length; i++)
+                thisFields[i] = allFields[i];
+            return thisFields;
+        }
         private void CreateLayout()
         {
             int count = 0;
-            CreateLabel(brandLabel, "Brand", 13.8F, FontStyle.Bold);
-            CreateTextBox(brandTextBox, "brand", count++);
-            CreateLabel(priceLabel, "Price", 13.8F, FontStyle.Bold);
-            CreateNumericUpDown(priceNumericUpDown, "price", Int32.MaxValue, count++);
-            CreateLabel(seatsLabel, "Seats", 13.8F, FontStyle.Bold);
-            CreateNumericUpDown(seatsNumericUpDown, "seats", Int32.MaxValue, count++);
-            CreateLabel(yearLabel, "Year", 13.8F, FontStyle.Bold);
-            CreateNumericUpDown(yearNumericUpDown, "year", 2023, count++);
-            CreateLabel(driverLabel, "Driver", 13.8F, FontStyle.Bold);
+            CreateLabel(new Label(), "Brand", 13.8F, FontStyle.Bold);
+            CreateTextBox(new TextBox(), "brand", count++);
+            CreateLabel(new Label(), "Price", 13.8F, FontStyle.Bold);
+            CreateNumericUpDown(new NumericUpDown(), "price", Int32.MaxValue, count++);
+            CreateLabel(new Label(), "Seats", 13.8F, FontStyle.Bold);
+            CreateNumericUpDown(new NumericUpDown(), "seats", Int32.MaxValue, count++);
+            CreateLabel(new Label(), "Year", 13.8F, FontStyle.Bold);
+            CreateNumericUpDown(new NumericUpDown(), "year", 2023, count++);
+            CreateSpecificControls(ref count);
+            CreateLabel(new Label(), "Driver", 13.8F, FontStyle.Bold);
             count++;
-            CreateLabel(nameLabel, "Driver's name", 10.8F, FontStyle.Italic);
-            CreateTextBox(nameTextBox, "brand", count++);
-            CreateLabel(ageLabel, "Driver's age", 10.8F, FontStyle.Italic);
-            CreateNumericUpDown(ageNumericUpDown, "age", 150, count++);
-            CreateLabel(categoriesLabel, "Driver's category", 10.8F, FontStyle.Italic);
-            CreateComboBox(categoryComboBox, "category", new string[] { "A", "B", "C", "D", "F", "I", "PPL", "FAA" }, count++);
+            CreateLabel(new Label(), "Driver's name", 10.8F, FontStyle.Italic);
+            CreateTextBox(new TextBox(), "brand", count++);
+            CreateLabel(new Label(), "Driver's age", 10.8F, FontStyle.Italic);
+            CreateNumericUpDown(new NumericUpDown(), "age", 150, count++);
+            CreateLabel(new Label(), "Driver's category", 10.8F, FontStyle.Italic);
+            CreateComboBox(new ComboBox(), "category", new string[] { "A", "B", "C", "D", "F", "I", "PPL", "FAA" }, count++);
             CreateLabel(passengersLabel, "Passengers", 13.8F, FontStyle.Bold);
+            passengersGV.Visible = true;
+            passengersGV.Location = passengersLabel.Location;
         }
 
         private void typeComboBox_SelectedValueChanged(object sender, EventArgs e)

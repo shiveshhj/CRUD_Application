@@ -14,5 +14,11 @@ namespace OOP_Application
         {
             this.name = _name;
         }
+        public string Name{
+            get
+            {
+                return name;
+            }    
+        }
     }
 }
