@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    abstract class Human
+    public abstract class Human
     {
-        protected string name;
-        protected int age;
+        public string name;
+        public int age;
         public Human(string _name, int _age)
         {
             this.name = _name;

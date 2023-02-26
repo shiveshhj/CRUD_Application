@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    class Passenger : Human
+    public class Passenger : Human
     {
-        private int bagWeight;
+        public int bagWeight;
         public Passenger(int _bagWeight, string _name, int _age) : base(_name, _age)
         {
             this.bagWeight = _bagWeight;

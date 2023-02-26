@@ -9,9 +9,9 @@ namespace OOP_Application
     class Helicopter : AirVehicle
     {
         [Name("Blades amount")]
-        private int bladesAmount;
+        public int bladesAmount;
         [Name("Blades length")]
-        private int bladesLength;
+        public int bladesLength;
 
         public Helicopter() { }
         public Helicopter(int _bladesAmount, int _bladesLength, int _flyingHeight, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :

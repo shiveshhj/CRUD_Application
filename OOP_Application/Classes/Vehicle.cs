@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    abstract class Vehicle
+    public abstract class Vehicle
     {
-        protected string brand;
-        protected int price;
-        protected int year;
-        protected int seatsAmount;
-        protected Driver driver;
-        protected List<Passenger> passengers;
+        [Name("Brand")]
+        public string brand;
+        [Name("Price")]
+        public int price;
+        [Name("Year")]
+        public int year;
+        [Name("Seats amount")]
+        public int seatsAmount;
+        public Driver driver;
+        public List<Passenger> passengers;
 
 
         public Vehicle() { }
@@ -26,5 +30,26 @@ namespace OOP_Application
             this.driver = _driver;
             this.passengers = _passengers;
         }
+
+        public string Brand
+        {
+            get => brand;
+        }
+
+        public int Price
+        {
+            get => price;
+        }
+
+        public int Year
+        {
+            get => year;
+        }
+
+        public int SeatsAmount
+        {
+            get => seatsAmount;
+        }
+
     }
 }

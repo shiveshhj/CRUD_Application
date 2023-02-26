@@ -10,7 +10,7 @@ namespace OOP_Application
     {
         public enum PlaneType { Passenger, Cargo, Millitary };
         [Name("Plane type")]
-        private PlaneType planeType;
+        public PlaneType planeType;
 
         public Plane() { }
         public Plane(PlaneType _planeType, int _flyingHeight, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :

@@ -8,8 +8,10 @@ namespace OOP_Application
 {
     abstract class LandVehicle : Vehicle
     {
-        protected int wheelsAmount;
-        protected int horsePower;
+        [Name("Wheels amount")]
+        public int wheelsAmount;
+        [Name("Horse power")]
+        public int horsePower;
 
         public LandVehicle() { }
         public LandVehicle(int _wheelsAmount, int _horsePower, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :

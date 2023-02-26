@@ -8,7 +8,8 @@ namespace OOP_Application
 {
     abstract class AirVehicle : Vehicle
     {
-        protected int flyingHeight;
+        [Name("Flying height")]
+        public int flyingHeight;
 
         public AirVehicle() { }
         public AirVehicle(int _flyingHeight, string _brand, int _price, int _year, int _seatsAmount, Driver _driver, List<Passenger> _passengers) :

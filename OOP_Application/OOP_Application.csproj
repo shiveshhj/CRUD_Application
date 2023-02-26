@@ -62,6 +62,11 @@
     <Compile Include="Classes\Car.cs" />
     <Compile Include="Classes\Human.cs" />
     <Compile Include="Classes\Vehicle.cs" />
+    <Compile Include="Factories\HelicopterFactory.cs" />
+    <Compile Include="Factories\PlaneFactory.cs" />
+    <Compile Include="Factories\TruckFactory.cs" />
+    <Compile Include="Factories\CarFactory.cs" />
+    <Compile Include="Factories\VehicleFactory.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

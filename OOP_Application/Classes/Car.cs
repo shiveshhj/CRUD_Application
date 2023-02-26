@@ -10,7 +10,7 @@ namespace OOP_Application
     {
         public enum CarType { Hatchback, Sedan, Pickup, Coupe, Minivan, StationWagon };
         [Name("Car type")]
-        private CarType carType;
+        public CarType carType;
 
 
         public Car() { }
