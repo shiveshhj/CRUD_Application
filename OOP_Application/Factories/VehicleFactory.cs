@@ -8,6 +8,6 @@ namespace OOP_Application.Factories
 {
     abstract class VehicleFactory
     {
-        public abstract Vehicle createVehicle(List<string> fields, List<Passenger> _passengers);
+        public abstract Vehicle createVehicle(List<object> fields);
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field  | AttributeTargets.Class)]
     class NameAttribute : System.Attribute
     {
         private string name;

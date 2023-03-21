@@ -11,12 +11,14 @@ namespace OOP_Application
     public partial class AddForm : Form
     {
         private Label passengersLabel = new Label();
+        private DataGridView passengersGV = new DataGridView();
         public static int mode = ADD_MODE;
         public const int ADD_MODE = 0;
         public const int VIEW_MODE = 1;
         public const int EDIT_MODE = 2;
         public static Vehicle currentVehicle;
         public static int editIndex;
+        private const int EXCEPT_PASSENGERS = 3;
 
         public AddForm()
         {
@@ -62,6 +64,7 @@ namespace OOP_Application
             numericUpDown.Minimum = (maxValue == 2023) ? 1900 : 0;
             numericUpDown.Value = (maxValue == 2023) ? 2023 : 0;
             numericUpDown.KeyUp += new KeyEventHandler(this.Control_KeyUp);
+            numericUpDown.Leave += new EventHandler(this.NumericUpDown_Leave);
             fieldsPanel.Controls.SetChildIndex(numericUpDown, 0);
         }
 
@@ -81,6 +84,34 @@ namespace OOP_Application
             fieldsPanel.Controls.SetChildIndex(comboBox, 0);
         }
 
+        private void CreateDataGridView()
+        {
+            CreateLabel(passengersLabel, "Passengers", 13.8F, FontStyle.Bold);
+            fieldsPanel.Controls.Add(passengersGV);
+            passengersGV.AllowUserToResizeColumns = false;
+            passengersGV.AllowUserToResizeRows = false;
+            passengersGV.BackgroundColor = SystemColors.Control;
+            passengersGV.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable;
+            passengersGV.ColumnHeadersHeight = 35;
+            passengersGV.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            passengersGV.EditMode = DataGridViewEditMode.EditOnKeystroke;
+            passengersGV.Location = new Point(0, 448);
+            passengersGV.MultiSelect = false;
+            passengersGV.Name = "passengersGV";
+            passengersGV.RowHeadersWidth = 10;
+            passengersGV.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            passengersGV.RowTemplate.Height = 24;
+            passengersGV.ScrollBars = ScrollBars.Vertical;
+            passengersGV.Size = new Size(407, 109);
+            passengersGV.TabIndex = 1;
+            passengersGV.CellValueChanged += new DataGridViewCellEventHandler(this.passengersGV_CellValueChanged);
+            passengersGV.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(this.passengersGV_EditingControlShowing);
+            passengersGV.KeyDown += new KeyEventHandler(this.passengersGV_KeyDown);
+            passengersGV.KeyPress += new KeyPressEventHandler(this.passengersGV_KeyPress);
+            passengersGV.Visible = true;
+            passengersGV.Location = passengersLabel.Location;
+        }
+
         private void CreateControl(FieldInfo field, ref int count)
         {
             if (field.FieldType == typeof(String))
@@ -93,53 +124,62 @@ namespace OOP_Application
                 CreateNumericUpDown(new NumericUpDown(), field.Name, Int32.MaxValue, count++);
                 return;
             }
-            if (field.FieldType == typeof(Car.CarType))
+//fixed combobox unflexible fields
+            FieldInfo[] subFields = field.FieldType.GetFields();
+            string[] strFields = new string[subFields.Length - 1];
+            for (int i = 0; i < subFields.Length - 1; i++)
             {
-                CreateComboBox(new ComboBox(), field.Name, new string[] { "Hatchback", "Sedan", "Pickup", "Coupe", "Minivan", "StationWagon" }, count++);
+                if (subFields[i + 1].Name == ("value__")) continue;
+                strFields[i] = subFields[i + 1].Name;
             }
-            else
-            {
-                CreateComboBox(new ComboBox(), field.Name, new string[] { "Passenger", "Cargo", "Millitary" }, count++);
-            }
+            CreateComboBox(new ComboBox(), field.Name, strFields, count++);
         }
 
-        private void CreateSpecificControls(ref int count)
+        private void CreateSpecificControls()
         {
+            int count = 0;
             FieldInfo[] thisFields = GetThisFields();
-            foreach (var field in thisFields)
+            for (int i = 0; i < thisFields.Length; i++)
             {
-                object[] MyAttribute = field.GetCustomAttributes(typeof(NameAttribute), false);
-                CreateLabel(new Label(), ((NameAttribute)(MyAttribute[0])).Name, 13.8F, FontStyle.Bold);
-                CreateControl(field, ref count);
+                var field = thisFields[i];
+                if (field.FieldType == typeof(Driver))
+                {
+                    CreateLabel(new Label(), "Driver", 13.8F, FontStyle.Bold);
+                    count++;
+                    var driverFields = field.FieldType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                    for (int j = driverFields.Length - 1; j >= 0; j--)
+                    {
+                        object[] attribute = driverFields[j].GetCustomAttributes(typeof(NameAttribute), false);
+                        CreateLabel(new Label(), "Driver's " + ((NameAttribute)(attribute[0])).Name, 10.8F, FontStyle.Italic);
+                        CreateControl(driverFields[j], ref count);
+                    }
+                }
+                else
+                if (field.FieldType.Name == "List`1")
+                {
+                    CreateDataGridView();
+                    continue;
+                }
+                else
+                {
+                    object[] MyAttribute = field.GetCustomAttributes(typeof(NameAttribute), false);
+                    CreateLabel(new Label(), ((NameAttribute)(MyAttribute[0])).Name, 13.8F, FontStyle.Bold);
+                    CreateControl(field, ref count);
+                }
             }
         }
 
         private FieldInfo[] GetThisFields()
         {
             Type type = Type.GetType("OOP_Application." + typeComboBox.Text);
-            var obj = Activator.CreateInstance(type);
-            var allFields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            FieldInfo[] thisFields = new FieldInfo[allFields.Length - 2];
-            for (int i = 0; i < thisFields.Length; i++)
-                thisFields[i] = allFields[i];
-            return thisFields;
+            var allFields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            return allFields;
         }
         private void CreateLayout()
         {
-            int count = 0;
-            CreateSpecificControls(ref count);
-            CreateLabel(new Label(), "Driver", 13.8F, FontStyle.Bold);
-            count++;
-            CreateLabel(new Label(), "Driver's name", 10.8F, FontStyle.Italic);
-            CreateTextBox(new TextBox(), "name", count++);
-            CreateLabel(new Label(), "Driver's age", 10.8F, FontStyle.Italic);
-            CreateNumericUpDown(new NumericUpDown(), "age", 150, count++);
-            CreateLabel(new Label(), "Driver's category", 10.8F, FontStyle.Italic);
-            CreateComboBox(new ComboBox(), "category", new string[] { "A", "B", "C", "D", "F", "I", "PPL", "FAA" }, count++);
-            CreateLabel(passengersLabel, "Passengers", 13.8F, FontStyle.Bold);
-            passengersGV.Visible = true;
+            CreateSpecificControls();
+//fixed driver's controls expicit creation
             addButton.Visible = true;
-            passengersGV.Location = passengersLabel.Location;
             this.Size = new Size(this.Size.Width, passengersGV.Location.Y + 250);
             this.CenterToScreen();
         }
@@ -156,7 +196,7 @@ namespace OOP_Application
                 var control = fieldsPanel.Controls[i];
                 Type controlType = control.GetType();
                 if (controlType == typeof(TextBox) && ((control as TextBox).Text.Length == 0 || (control as TextBox).Text.Length > 15))
-                        return false;
+                    return false;
                 if (controlType == typeof(NumericUpDown) && ((control as NumericUpDown).Value > Int32.MaxValue))
                     return false;
                 if (controlType == typeof(ComboBox) && ((control as ComboBox).SelectedIndex == -1))
@@ -261,10 +301,36 @@ namespace OOP_Application
             }
         }
 
+        private void Control_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (mode != VIEW_MODE)
+                addButton.Enabled = IsInputCorrect();
+        }
+        private void passengersGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (mode != VIEW_MODE)
+                addButton.Enabled = IsInputCorrect();
+        }
+
+        private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            var regex = new Regex(@"[^a-zA-Z\s\b]");
+            if (regex.IsMatch(e.KeyChar.ToString()))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void NumericUpDown_Leave(object sender, EventArgs e)
+        {
+            if ((sender as NumericUpDown).Text == "")
+                (sender as NumericUpDown).Text = "0";
+        }
+
         #endregion
 
         #region Creation of the new vehicle
-
+//added classes attributes
         Dictionary<Type, Type> dictionary = new Dictionary<Type, Type>(){
             { typeof(Car), typeof(Factories.CarFactory) },
             { typeof(Truck), typeof(Factories.TruckFactory) },
@@ -276,13 +342,14 @@ namespace OOP_Application
         {
             Type type = Type.GetType("OOP_Application." + typeComboBox.SelectedItem.ToString());
             Factories.VehicleFactory vehicleFactory = (Factories.VehicleFactory)Activator.CreateInstance(dictionary[type]);
-            List<string> fields = new List<string>();
-            int count = fieldsPanel.Controls.Count;
-            for (int i = fieldsPanel.Controls.Count - 3; i > -1; i--)
+//converted to object
+            List<object> fields = new List<object>();
+            for (int i = fieldsPanel.Controls.Count - EXCEPT_PASSENGERS; i > -1; i--)
             {
                 fields.Add(fieldsPanel.Controls[i].Text);
             }
-            Vehicle vehicle = vehicleFactory.createVehicle(fields, CreatePassengers());
+            fields.Add(CreatePassengers());
+            Vehicle vehicle = vehicleFactory.createVehicle(fields);
             if (add)
             {
                 MainForm.vehicles.Add(vehicle);
@@ -342,7 +409,8 @@ namespace OOP_Application
                     var comboBox = GetComponentByName(componentName);
                     foreach (var item in (comboBox as ComboBox).Items)
                     {
-                        if (item == currentVehicle.GetType().GetField(field.Name).GetValue(currentVehicle))
+                        var val = currentVehicle.GetType().GetField(field.Name).GetValue(currentVehicle);
+                        if ((string)item == val.ToString())
                         {
                             (comboBox as ComboBox).SelectedItem = item;
                         }
@@ -422,6 +490,8 @@ namespace OOP_Application
 
         private void AddForm_Load(object sender, EventArgs e)
         {
+            FillTypeComboBox();
+            passengersGV.Columns.AddRange(new DataGridViewColumn[] { nameColumn, ageColumn, bagWeightColumn});
             switch (mode)
             {
                 case EDIT_MODE:
@@ -443,7 +513,17 @@ namespace OOP_Application
                     }
             }
         }
-       
+
+//fixed type unflexible fields
+        private void FillTypeComboBox()
+        {
+            foreach (var type in dictionary.Keys)
+            {
+                object[] MyAttribute = type.GetCustomAttributes(typeof(NameAttribute), false);
+                typeComboBox.Items.Add(((NameAttribute)(MyAttribute[0])).Name);
+            }
+        }
+
         private void addButton_Click(object sender, EventArgs e)
         {
             switch (mode)
@@ -460,26 +540,6 @@ namespace OOP_Application
                     }
             }
             Close();
-        }
-
-        private void Control_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (mode != VIEW_MODE)
-                addButton.Enabled = IsInputCorrect();
-        }
-        private void passengersGV_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (mode != VIEW_MODE)
-                addButton.Enabled = IsInputCorrect();
-        }
-
-        private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            var regex = new Regex(@"[^a-zA-Z\s\b]");
-            if (regex.IsMatch(e.KeyChar.ToString()))
-            {
-                e.Handled = true;
-            }
         }
     }
 }

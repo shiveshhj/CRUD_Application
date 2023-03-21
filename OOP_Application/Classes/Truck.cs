@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
+    [Name("Truck")]
     class Truck : LandVehicle
     {
         [Name("Load capacity")]

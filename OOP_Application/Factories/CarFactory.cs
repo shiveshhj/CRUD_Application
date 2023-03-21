@@ -8,18 +8,19 @@ namespace OOP_Application.Factories
 {
     class CarFactory : VehicleFactory
     {
-        public override Vehicle createVehicle(List<string> fields, List<Passenger> _passengers)
+        public override Vehicle createVehicle(List<object> fields)
         {
-            Driver.Category category = (Driver.Category)Enum.Parse(typeof(Driver.Category), fields[9]);
-            Driver driver = new Driver(fields[7], Int32.Parse(fields[8]), category);
+            Driver.Category category = (Driver.Category)Enum.Parse(typeof(Driver.Category),(string)fields[9]);
+            Driver driver = new Driver((string)fields[7], Convert.ToInt32(fields[8]), category);
+            List<Passenger> _passengers = (List<Passenger>)fields[fields.Count - 1];
             return new Car(
-                (Car.CarType)Enum.Parse(typeof(Car.CarType), fields[0]),
-                Int32.Parse(fields[1]),
-                Int32.Parse(fields[2]),
-                fields[3],
-                Int32.Parse(fields[4]),
-                Int32.Parse(fields[5]),
-                Int32.Parse(fields[6]),
+                (Car.CarType)Enum.Parse(typeof(Car.CarType), (string)fields[0]),
+                Convert.ToInt32(fields[1]),
+                Convert.ToInt32(fields[2]),
+                (string)fields[3],
+                Convert.ToInt32(fields[4]),
+                Convert.ToInt32(fields[5]),
+                Convert.ToInt32(fields[6]),
                 driver,
                 _passengers);
         }

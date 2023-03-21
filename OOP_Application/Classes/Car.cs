@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
+    [Name("Car")]
     class Car : LandVehicle
     {
         public enum CarType { Hatchback, Sedan, Pickup, Coupe, Minivan, StationWagon };

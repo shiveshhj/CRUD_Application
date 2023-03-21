@@ -32,6 +32,7 @@ namespace OOP_Application
                     vehicle.Price,
                     vehicle.SeatsAmount             
                 });
+                i++;
             }
         }
         private void addButton_Click(object sender, EventArgs e)
@@ -71,6 +72,8 @@ namespace OOP_Application
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
+            if (DialogResult.No == MessageBox.Show("Are you sure?", "Delete vehicle", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                return;
             Vehicle temp = vehicles[vehiclesGV.CurrentRow.Index];
             vehicles.RemoveAt(vehiclesGV.CurrentRow.Index);
             temp.driver = null;
@@ -85,6 +88,7 @@ namespace OOP_Application
             {
                 viewButton.Enabled = editButton.Enabled = deleteButton.Enabled = false;
             }
+            DisplayVehicles();
         }
     }
 

@@ -8,8 +8,11 @@ namespace OOP_Application
 {
     public abstract class Human
     {
-        public string name;
+        [Name("age")]
         public int age;
+        [Name("name")]
+        public string name;
+
         public Human(string _name, int _age)
         {
             this.name = _name;

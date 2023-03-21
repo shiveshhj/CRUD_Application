@@ -8,8 +8,8 @@ namespace OOP_Application
 {
     public class Driver : Human
     {
-        [Flags]
         public enum Category { A, B, C, D, F, I, PPL, FAA };
+        [Name("category")]
         public Category category;
 
         public Driver(string _name, int _age, Category _category) : base(_name, _age)

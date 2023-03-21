@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
+    [Name("Plane")]
     class Plane : AirVehicle
     {
         public enum PlaneType { Passenger, Cargo, Millitary };
