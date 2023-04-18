@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace OOP_Application
 {
     [Name("Truck")]
-    class Truck : LandVehicle
+    public class Truck : LandVehicle
     {
         [Name("Load capacity")]
         public int loadCapacity;
@@ -20,6 +20,25 @@ namespace OOP_Application
         {
             this.loadCapacity = _loadCapacity;
             this.bodyVolume = _bodyVolume;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Truck truck &&
+                   brand == truck.brand &&
+                   price == truck.price &&
+                   year == truck.year &&
+                   seatsAmount == truck.seatsAmount &&
+                   driver.Equals(truck.driver) &&
+                   passengers.SequenceEqual(truck.passengers) &&
+                   Brand == truck.Brand &&
+                   Price == truck.Price &&
+                   Year == truck.Year &&
+                   SeatsAmount == truck.SeatsAmount &&
+                   wheelsAmount == truck.wheelsAmount &&
+                   horsePower == truck.horsePower &&
+                   loadCapacity == truck.loadCapacity &&
+                   bodyVolume == truck.bodyVolume;
         }
     }
 }

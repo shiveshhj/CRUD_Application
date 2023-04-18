@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace OOP_Application
 {
     [Name("Plane")]
-    class Plane : AirVehicle
+    public class Plane : AirVehicle
     {
         public enum PlaneType { Passenger, Cargo, Millitary };
         [Name("Plane type")]
@@ -18,6 +18,23 @@ namespace OOP_Application
                 base(_flyingHeight, _brand, _price, _year, _seatsAmount, _driver, _passengers)
         {
             this.planeType = _planeType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Plane plane &&
+                   brand == plane.brand &&
+                   price == plane.price &&
+                   year == plane.year &&
+                   seatsAmount == plane.seatsAmount &&
+                   driver.Equals(plane.driver) &&
+                   passengers.SequenceEqual(plane.passengers) &&
+                   Brand == plane.Brand &&
+                   Price == plane.Price &&
+                   Year == plane.Year &&
+                   SeatsAmount == plane.SeatsAmount &&
+                   flyingHeight == plane.flyingHeight &&
+                   planeType == plane.planeType;
         }
     }
 }

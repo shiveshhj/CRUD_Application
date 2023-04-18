@@ -129,27 +129,28 @@ namespace OOP_Application
             this.typeComboBox.Name = "typeComboBox";
             this.typeComboBox.Size = new System.Drawing.Size(407, 31);
             this.typeComboBox.TabIndex = 0;
+            this.typeComboBox.SelectedIndexChanged += new System.EventHandler(this.typeComboBox_SelectedIndexChanged);
             this.typeComboBox.SelectedValueChanged += new System.EventHandler(this.typeComboBox_SelectedValueChanged);
             // 
             // bagWeightColumn
             // 
+            this.bagWeightColumn.HeaderText = "Bag weight";
             this.bagWeightColumn.MinimumWidth = 6;
             this.bagWeightColumn.Name = "bagWeightColumn";
-            this.bagWeightColumn.HeaderText = "Bag weight";
             this.bagWeightColumn.Width = 125;
             // 
             // ageColumn
             // 
+            this.ageColumn.HeaderText = "Age";
             this.ageColumn.MinimumWidth = 6;
             this.ageColumn.Name = "ageColumn";
-            this.ageColumn.HeaderText = "Age";
             this.ageColumn.Width = 125;
             // 
             // nameColumn
             // 
+            this.nameColumn.HeaderText = "Name";
             this.nameColumn.MinimumWidth = 6;
             this.nameColumn.Name = "nameColumn";
-            this.nameColumn.HeaderText = "Name";
             this.nameColumn.Width = 125;
             // 
             // AddForm

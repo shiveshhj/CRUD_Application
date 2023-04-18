@@ -13,6 +13,10 @@ namespace OOP_Application
         [Name("name")]
         public string name;
 
+        public Human()
+        {
+        }
+
         public Human(string _name, int _age)
         {
             this.name = _name;

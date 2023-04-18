@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using OOP_Application.Serializable_Classes;
 
 namespace OOP_Application
 {
@@ -124,7 +125,6 @@ namespace OOP_Application
                 CreateNumericUpDown(new NumericUpDown(), field.Name, Int32.MaxValue, count++);
                 return;
             }
-//fixed combobox unflexible fields
             FieldInfo[] subFields = field.FieldType.GetFields();
             string[] strFields = new string[subFields.Length - 1];
             for (int i = 0; i < subFields.Length - 1; i++)
@@ -155,7 +155,7 @@ namespace OOP_Application
                     }
                 }
                 else
-                if (field.FieldType.Name == "List`1")
+                if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
                 {
                     CreateDataGridView();
                     continue;
@@ -178,7 +178,6 @@ namespace OOP_Application
         private void CreateLayout()
         {
             CreateSpecificControls();
-//fixed driver's controls expicit creation
             addButton.Visible = true;
             this.Size = new Size(this.Size.Width, passengersGV.Location.Y + 250);
             this.CenterToScreen();
@@ -330,7 +329,6 @@ namespace OOP_Application
         #endregion
 
         #region Creation of the new vehicle
-//added classes attributes
         Dictionary<Type, Type> dictionary = new Dictionary<Type, Type>(){
             { typeof(Car), typeof(Factories.CarFactory) },
             { typeof(Truck), typeof(Factories.TruckFactory) },
@@ -342,7 +340,6 @@ namespace OOP_Application
         {
             Type type = Type.GetType("OOP_Application." + typeComboBox.SelectedItem.ToString());
             Factories.VehicleFactory vehicleFactory = (Factories.VehicleFactory)Activator.CreateInstance(dictionary[type]);
-//converted to object
             List<object> fields = new List<object>();
             for (int i = fieldsPanel.Controls.Count - EXCEPT_PASSENGERS; i > -1; i--)
             {
@@ -514,7 +511,6 @@ namespace OOP_Application
             }
         }
 
-//fixed type unflexible fields
         private void FillTypeComboBox()
         {
             foreach (var type in dictionary.Keys)
@@ -540,6 +536,11 @@ namespace OOP_Application
                     }
             }
             Close();
+        }
+
+        private void typeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

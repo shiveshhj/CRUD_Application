@@ -12,9 +12,22 @@ namespace OOP_Application
         [Name("category")]
         public Category category;
 
+        public Driver()
+        {
+        }
+
         public Driver(string _name, int _age, Category _category) : base(_name, _age)
         {
             this.category = _category;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Driver driver &&
+                   age == driver.age &&
+                   name == driver.name &&
+                   category == driver.category;
+        }
+
     }
 }

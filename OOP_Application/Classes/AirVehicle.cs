@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OOP_Application
 {
-    abstract class AirVehicle : Vehicle
+    public abstract class AirVehicle : Vehicle
     {
         [Name("Flying height")]
         public int flyingHeight;

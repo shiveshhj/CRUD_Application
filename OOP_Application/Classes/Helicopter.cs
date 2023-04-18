@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OOP_Application
 {
     [Name("Helicopter")]
-    class Helicopter : AirVehicle
+    public class Helicopter : AirVehicle
     {
         [Name("Blades amount")]
         public int bladesAmount;
@@ -20,6 +21,24 @@ namespace OOP_Application
         {
             this.bladesAmount = _bladesAmount;
             this.bladesLength= _bladesLength;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Helicopter helicopter &&
+                   brand == helicopter.brand &&
+                   price == helicopter.price &&
+                   year == helicopter.year &&
+                   seatsAmount == helicopter.seatsAmount &&
+                   driver.Equals(helicopter.driver) &&
+                   passengers.SequenceEqual(helicopter.passengers) &&
+                   Brand == helicopter.Brand &&
+                   Price == helicopter.Price &&
+                   Year == helicopter.Year &&
+                   SeatsAmount == helicopter.SeatsAmount &&
+                   flyingHeight == helicopter.flyingHeight &&
+                   bladesAmount == helicopter.bladesAmount &&
+                   bladesLength == helicopter.bladesLength;
         }
     }
 }

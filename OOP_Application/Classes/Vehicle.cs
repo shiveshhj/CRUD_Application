@@ -51,5 +51,19 @@ namespace OOP_Application
             get => seatsAmount;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Vehicle vehicle &&
+                   brand == vehicle.brand &&
+                   price == vehicle.price &&
+                   year == vehicle.year &&
+                   seatsAmount == vehicle.seatsAmount &&
+                   driver.Equals(vehicle.driver) &&
+                   passengers.SequenceEqual(vehicle.passengers) &&
+                   Brand == vehicle.Brand &&
+                   Price == vehicle.Price &&
+                   Year == vehicle.Year &&
+                   SeatsAmount == vehicle.SeatsAmount;
+        }
     }
 }
