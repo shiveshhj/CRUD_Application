@@ -1,12 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using static OOP_Application.Car;
-using System.Runtime.Serialization;
-using OOP_Application.Factories;
-using System.Text.Json.Serialization;
 
 namespace OOP_Application.Serializable_Classes
 {

@@ -10,36 +10,35 @@ namespace OOP_Application.Serializers
 {
     internal class Text_Serializer : ISerializer
     {
-        public void Serialize(List<Vehicle> vehicles, string fileName)
+        public void Serialize(List<Vehicle> vehicles, Stream fileStream)
         {
             List<VehicleSerializableModel> models = ClassConverter.VehiclesToModels(vehicles);
-            using (StreamWriter writer = new StreamWriter(fileName))
+            StreamWriter writer = new StreamWriter(fileStream);
+            writer.WriteLine("[");
+            foreach (var model in models)
             {
-                writer.WriteLine("[");
-                foreach (var model in models)
+                Type modelType = model.GetType();
+                writer.WriteLine($"~{modelType.Name.Replace("SerializableModel", "")}");
+                foreach (var field in modelType.GetFields())
                 {
-                    Type modelType = model.GetType();
-                    writer.WriteLine($"~{modelType.Name.Replace("SerializableModel", "")}");
-                    foreach (var field in modelType.GetFields())
+                    var value = field.GetValue(model);
+                    if (field.FieldType.IsPrimitive || field.FieldType == typeof(string) || field.FieldType.IsEnum)
                     {
-                        var value = field.GetValue(model);
-                        if (field.FieldType.IsPrimitive || field.FieldType == typeof(string) || field.FieldType.IsEnum)
-                        {
-                            writer.WriteLine($"\t{field.Name} <=> {value}");
-                        }
-                        else if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
-                        {
-                            OutputNestedList(value, writer, field);
-                        }
-                        else
-                        {
-                            OutputNestedObject(value, writer, field);
-                        }
+                        writer.WriteLine($"\t{field.Name} <=> {value}");
                     }
-                    writer.WriteLine("---");
+                    else if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                    {
+                        OutputNestedList(value, writer, field);
+                    }
+                    else
+                    {
+                        OutputNestedObject(value, writer, field);
+                    }
                 }
-                writer.Write("]");
+                writer.WriteLine("---");
             }
+            writer.Write("]");
+            writer.Flush();
         }
 
         private void OutputNestedObject(object value, StreamWriter writer, FieldInfo field)
@@ -63,7 +62,7 @@ namespace OOP_Application.Serializers
             foreach (var item in list)
             {
                 Type itemType = item.GetType();
-                writer.WriteLine($"\t~{itemType.Name.Replace("Model", "")}");
+                writer.WriteLine($"\t~{itemType.Name.Replace("  Model", "")}");
                 foreach (var itemField in itemType.GetFields())
                 {
                     var itemValue = itemField.GetValue(item);
@@ -76,37 +75,35 @@ namespace OOP_Application.Serializers
 
         private string GetLine(StreamReader reader)
         {
+            if (reader.EndOfStream) throw new Exception("End of file appeared too early");
             string line = reader.ReadLine();
             if (line.Trim() == "")
                 throw new Exception("Empty line in a file");
             return line;
         }
         
-        public List<Vehicle> Deserialize(string fileName)
+        public List<Vehicle> Deserialize(Stream fileStream)
         {
             List<VehicleSerializableModel> models = new List<VehicleSerializableModel>();
-
-            using (StreamReader reader = new StreamReader(fileName))
+            StreamReader reader = new StreamReader(fileStream);
+            string line = GetLine(reader);
+            if (!line.Trim().Equals("[")) throw new Exception("Error in line: " + line.Trim() + "\n'[' expected");
+            while (!reader.EndOfStream)
             {
-                string line = GetLine(reader);
-                if (!line.Trim().Equals("[")) throw new Exception("Error in line: " + line.Trim() + "\n'[' expected");
-                while (!reader.EndOfStream)
+                line = GetLine(reader);
+                if (line.Trim().StartsWith("~"))
                 {
-                    line = GetLine(reader);
-                    if (line.Trim().StartsWith("~"))
-                    {
-                        AssembleVehicle(out object model, reader, line);
-                        VehicleSerializableModel.CheckFields(model);
-                        models.Add((VehicleSerializableModel)model);
-                    }
-                    else
-                        if (line.Trim().StartsWith("]"))
-                            break;
-                    else
-                        throw new Exception("Error in line: " + line.Trim() + "\n'~Class' expected");
+                    AssembleVehicle(out object model, reader, line);
+                    VehicleSerializableModel.CheckFields(model);
+                    models.Add((VehicleSerializableModel)model);
                 }
-                return ClassConverter.ModelsToVehicles(models);
+                else
+                    if (line.Trim().StartsWith("]"))
+                        break;
+                else
+                    throw new Exception("Error in line: " + line.Trim() + "\n'~Class' expected");
             }
+            return ClassConverter.ModelsToVehicles(models);
         }
 
         private void AssembleVehicle(out object model, StreamReader reader, string line)
@@ -122,6 +119,8 @@ namespace OOP_Application.Serializers
                 FieldInfo field = modelType.GetField(propertyName) ?? throw new Exception("Error in line: " + line.Trim() + $"\nWrong field name '{parts[0].Trim()}' ");
                 if (parts.Length >= 2)
                 {
+                    if (parts.Length >= 3)
+                        throw new Exception("Error in line: " + line.Trim() + $"\nWrong 'field <=> value' declaration '{line.Trim()}'");
                     string propertyValue = parts[1].Trim();
                     if (field.FieldType.IsPrimitive || field.FieldType == typeof(string) || field.FieldType.IsEnum)
                     {

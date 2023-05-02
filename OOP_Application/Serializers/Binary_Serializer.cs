@@ -11,22 +11,16 @@ namespace OOP_Application.Serializers
 {
     internal class Binary_Serializer : ISerializer
     {
-        public List<Vehicle> Deserialize(string fileName)
+        public List<Vehicle> Deserialize(Stream fileStream)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream fs = new FileStream(fileName, FileMode.Open))
-            {
-                return ClassConverter.ModelsToVehicles((List<VehicleSerializableModel>)formatter.Deserialize(fs));
-            }
+            return ClassConverter.ModelsToVehicles((List<VehicleSerializableModel>)formatter.Deserialize(fileStream));
         }
 
-        public void Serialize(List<Vehicle> vehicles, string fileName)
+        public void Serialize(List<Vehicle> vehicles, Stream fileStream)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream fs = new FileStream(fileName, FileMode.Create))
-            {
-                formatter.Serialize(fs, ClassConverter.VehiclesToModels(vehicles));
-            }
+            formatter.Serialize(fileStream, ClassConverter.VehiclesToModels(vehicles));
         }
 
     }

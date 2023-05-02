@@ -5,6 +5,7 @@ using OOP_Application.Factories;
 using OOP_Application;
 using System.CodeDom.Compiler;
 using System.Resources;
+using System.IO;
 
 namespace TestProject
 {
@@ -17,7 +18,6 @@ namespace TestProject
         {
             SerializerFactory serializerFactory = (SerializerFactory)Activator.CreateInstance(typeof(TextFactory));
             serializer = serializerFactory.CreateSerializer();
-
         }
 
         [Test]
@@ -25,7 +25,8 @@ namespace TestProject
         {
             try
             {
-                vehicles = serializer.Deserialize("Tests\\test1.txt");
+                using (FileStream fileStream = new FileStream("Tests\\test1.txt", FileMode.Open))
+                    vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
@@ -46,7 +47,8 @@ namespace TestProject
         {
             try
             {
-                vehicles = serializer.Deserialize("Tests\\test2.txt");
+                using (FileStream fileStream = new FileStream("Tests\\test2.txt", FileMode.Open))
+                    vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
@@ -68,7 +70,8 @@ namespace TestProject
         {
             try
             {
-                vehicles = serializer.Deserialize("Tests\\test3.txt");
+                using (FileStream fileStream = new FileStream("Tests\\test3.txt", FileMode.Open))
+                    vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
@@ -82,7 +85,8 @@ namespace TestProject
         {
             try
             {
-                vehicles = serializer.Deserialize("Tests\\test4.txt");
+                using (FileStream fileStream = new FileStream("Tests\\test4.txt", FileMode.Open))
+                    vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
@@ -96,7 +100,8 @@ namespace TestProject
         {
             try
             {
-                vehicles = serializer.Deserialize("Tests\\test5.txt");
+                using (FileStream fileStream = new FileStream("Tests\\test5.txt", FileMode.Open))
+                    vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {

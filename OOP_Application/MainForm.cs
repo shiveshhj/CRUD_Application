@@ -1,6 +1,8 @@
 ﻿using OOP_Application.Factories;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace OOP_Application
@@ -68,6 +70,7 @@ namespace OOP_Application
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            CreatePlugins();
             Car car = new Car(Car.CarType.Coupe, 4, 1000, "brrr", 500, 2022, 5, new Driver("John", 35, Driver.Category.B), new List<Passenger> { new Passenger(20, "Bob", 20) });
             Plane plane = new Plane(Plane.PlaneType.Passenger, 2000, "scrr", 1500, 2020, 50, new Driver("Bill", 30, Driver.Category.F), new List<Passenger> { new Passenger(22, "Alice", 21), new Passenger(25, "Cob", 21) });
             vehicles.Add(car);
@@ -112,8 +115,49 @@ namespace OOP_Application
             { SerializationType.Xml, typeof(XmlFactory) }
         };
 
+        Dictionary<string, IArchiverPlugin> plugins;
+        private void CreatePlugins()
+        {
+            plugins = new Dictionary<string, IArchiverPlugin>();
+            /*string rootDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+            string[] binDirectories = Directory.GetDirectories(rootDirectory, "bin", SearchOption.AllDirectories);
+            foreach (string binDirectory in binDirectories)
+            {
+                string[] dllFiles = Directory.GetFiles(binDirectory, "*.dll", SearchOption.AllDirectories);
+                if (dllFiles.Length > 1) continue;
+                foreach (string pluginFile in dllFiles)
+                {
+                    Assembly pluginAssembly = Assembly.LoadFile(pluginFile);
+                    Type[] types = pluginAssembly.GetExportedTypes();
+                    foreach (Type type in types)
+                    {
+                        if (typeof(IArchiverPlugin).IsAssignableFrom(type))
+                        {
+                            IArchiverPlugin plugin = (IArchiverPlugin)Activator.CreateInstance(type);
+                            plugins.Add(plugin.Extension.Trim('*'), plugin);
+                        }
+                    }
+                }
+            }*/
+            string[] pluginFiles = Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"), "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (string pluginFile in pluginFiles)
+            {
+                Assembly pluginAssembly = Assembly.LoadFile(pluginFile);
+                Type[] types = pluginAssembly.GetExportedTypes();
+                foreach (Type type in types)
+                {
+                    if (typeof(IArchiverPlugin).IsAssignableFrom(type))
+                    {
+                        IArchiverPlugin plugin = (IArchiverPlugin)Activator.CreateInstance(type);
+                        plugins.Add(plugin.Extension.Trim('*'), plugin);
+                    }
+                }
+            }
+        }
+
         private void openMenuItem_Click(object sender, EventArgs e)
         {
+            CreatePlugins();
             openFileDialog.Filter = GetFileFilter();
             if (openFileDialog.ShowDialog() == DialogResult.Cancel)
                 return;
@@ -125,14 +169,30 @@ namespace OOP_Application
             var serializerType = (SerializationType)(openFileDialog.FilterIndex - 1);
             SerializerFactory serializerFactory = (SerializerFactory)Activator.CreateInstance(serializers[serializerType]);
             ISerializer serializer = serializerFactory.CreateSerializer();
+            FileStream fileStream = new FileStream(fileName, FileMode.Open);
+            bool wasArhived = true;
             try
             {
-                vehicles = serializer.Deserialize(fileName);
+                fileStream = plugins[Path.GetExtension(fileName)].Decompress(fileStream);
+            }
+            catch (KeyNotFoundException)
+            {
+                wasArhived = false;
+            }
+            try
+            {
+                vehicles = serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error in file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            } 
+            finally 
+            {
+                fileStream.Close();
+                if (wasArhived)
+                    File.Delete(fileStream.Name);
             }
             DisplayVehicles();
         }
@@ -144,21 +204,39 @@ namespace OOP_Application
             for (int i = 1; i < fields.Length; i++)
             {
                 var field = fields[i];
-                filter += ((NameAttribute)field.GetCustomAttributes(typeof(NameAttribute), false)[0]).Name + "|";
+                string[] serializerAttribute = ((NameAttribute)field.GetCustomAttributes(typeof(NameAttribute), false)[0]).Name.Split('|');
+                string serializerName = serializerAttribute[0];
+                string serializerExtension = serializerAttribute[1];
+                foreach (var plugin in plugins)
+                {
+                    serializerExtension +=  ";" + plugin.Value.Extension;
+                }
+                filter += serializerName + '|' + serializerExtension + '|';
             }
             return filter.Remove(filter.Length - 1, 1);
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            CreatePlugins();
             saveFileDialog.Filter = GetFileFilter();
             if (saveFileDialog.ShowDialog() == DialogResult.Cancel)
                 return;
             var serializerType = (SerializationType)(saveFileDialog.FilterIndex - 1);
-            string filename = saveFileDialog.FileName;
+            string fileName = saveFileDialog.FileName;
             SerializerFactory serializerFactory = (SerializerFactory)Activator.CreateInstance(serializers[serializerType]);
             ISerializer serializer = serializerFactory.CreateSerializer();
-            serializer.Serialize(vehicles, filename);
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Create))
+            {
+                serializer.Serialize(vehicles, fileStream);
+                try
+                {
+                    plugins[Path.GetExtension(fileName)].Compress(fileStream);
+                }
+                catch (KeyNotFoundException)
+                {
+                }
+            }
         }
     }
 

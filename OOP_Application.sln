@@ -5,7 +5,13 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OOP_Application", "OOP_Application\OOP_Application.csproj", "{15EDEA98-C4D0-4CBC-A149-584665252B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{B707FCB9-526D-4B42-841F-BBEFDC6A8E48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{B707FCB9-526D-4B42-841F-BBEFDC6A8E48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipArchiverPlugin", "ZipArchiverPlugin\ZipArchiverPlugin.csproj", "{BF7D815D-76FC-4013-9B7E-82E20B4A550C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZipArchiverPlugin", "GZipArchiverPlugin\GZipArchiverPlugin.csproj", "{23420B7D-9CD2-4DD2-B6F9-AF350D12B681}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PluginProjects", "PluginProjects", "{16E2A703-5F34-4E60-AB06-440CAB31CC81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +27,21 @@ Global
 		{B707FCB9-526D-4B42-841F-BBEFDC6A8E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B707FCB9-526D-4B42-841F-BBEFDC6A8E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B707FCB9-526D-4B42-841F-BBEFDC6A8E48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF7D815D-76FC-4013-9B7E-82E20B4A550C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF7D815D-76FC-4013-9B7E-82E20B4A550C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF7D815D-76FC-4013-9B7E-82E20B4A550C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF7D815D-76FC-4013-9B7E-82E20B4A550C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23420B7D-9CD2-4DD2-B6F9-AF350D12B681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23420B7D-9CD2-4DD2-B6F9-AF350D12B681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23420B7D-9CD2-4DD2-B6F9-AF350D12B681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23420B7D-9CD2-4DD2-B6F9-AF350D12B681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BF7D815D-76FC-4013-9B7E-82E20B4A550C} = {16E2A703-5F34-4E60-AB06-440CAB31CC81}
+		{23420B7D-9CD2-4DD2-B6F9-AF350D12B681} = {16E2A703-5F34-4E60-AB06-440CAB31CC81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0FE0EE2-A355-458A-8F97-53B05B88D29B}

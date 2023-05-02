@@ -13,22 +13,18 @@ namespace OOP_Application.Serializers
 {
     public class Xml_Serializer : ISerializer
     {
-        public List<Vehicle> Deserialize(string fileName)
+        public List<Vehicle> Deserialize(Stream fileStream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(List<VehicleSerializableModel>));
-            using (TextReader reader = new StreamReader(fileName))
-            {
-                return ClassConverter.ModelsToVehicles((List<VehicleSerializableModel>)serializer.Deserialize(reader));
-            }
+            TextReader reader = new StreamReader(fileStream);
+            return ClassConverter.ModelsToVehicles((List<VehicleSerializableModel>)serializer.Deserialize(reader));
         }
 
-        public void Serialize(List<Vehicle> vehicles, string fileName)
+        public void Serialize(List<Vehicle> vehicles, Stream fileStream)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(List<VehicleSerializableModel>));
-            using (TextWriter writer = new StreamWriter(fileName))
-            {
-                serializer.Serialize(writer, ClassConverter.VehiclesToModels(vehicles));
-            }
+            TextWriter writer = new StreamWriter(fileStream);
+            serializer.Serialize(writer, ClassConverter.VehiclesToModels(vehicles));
         }
  
     }
