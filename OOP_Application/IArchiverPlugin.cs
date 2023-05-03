@@ -6,6 +6,6 @@ namespace OOP_Application
     {
         string Extension { get; }
         void Compress(FileStream fileStream);
-        FileStream Decompress(FileStream fileStream);
+        void Decompress(MemoryStream fileStream);
     }
 }

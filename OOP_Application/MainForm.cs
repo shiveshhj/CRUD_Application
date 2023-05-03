@@ -38,7 +38,7 @@ namespace OOP_Application
                 deleteButton.Enabled = false;
             }
         }
-        private void addButton_Click(object sender, EventArgs e)
+        private void AddButton_Click(object sender, EventArgs e)
         {
             AddForm addForm = new AddForm();
             AddForm.mode = AddForm.ADD_MODE;
@@ -46,7 +46,7 @@ namespace OOP_Application
             DisplayVehicles();
         }
 
-        private void viewButton_Click(object sender, EventArgs e)
+        private void ViewButton_Click(object sender, EventArgs e)
         {
             AddForm addForm = new AddForm();
             AddForm.mode = AddForm.VIEW_MODE;
@@ -54,7 +54,7 @@ namespace OOP_Application
             addForm.ShowDialog();
         }
 
-        private void editButton_Click(object sender, EventArgs e)
+        private void EditButton_Click(object sender, EventArgs e)
         {
             AddForm addForm = new AddForm();
             AddForm.mode = AddForm.EDIT_MODE;
@@ -63,7 +63,7 @@ namespace OOP_Application
             addForm.ShowDialog();
             DisplayVehicles();
         }
-        private void vehiclesGV_CellEnter(object sender, DataGridViewCellEventArgs e)
+        private void VehiclesGV_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             viewButton.Enabled = editButton.Enabled = deleteButton.Enabled = true;
         }
@@ -71,14 +71,14 @@ namespace OOP_Application
         private void MainForm_Load(object sender, EventArgs e)
         {
             CreatePlugins();
-            Car car = new Car(Car.CarType.Coupe, 4, 1000, "brrr", 500, 2022, 5, new Driver("John", 35, Driver.Category.B), new List<Passenger> { new Passenger(20, "Bob", 20) });
-            Plane plane = new Plane(Plane.PlaneType.Passenger, 2000, "scrr", 1500, 2020, 50, new Driver("Bill", 30, Driver.Category.F), new List<Passenger> { new Passenger(22, "Alice", 21), new Passenger(25, "Cob", 21) });
+            Car car = new Car(Car.CarType.Coupe, 4, 1000, "brand", 500, 2022, 5, new Driver("John", 35, Driver.Category.B), new List<Passenger> { new Passenger(20, "Bob", 20) });
+            Plane plane = new Plane(Plane.PlaneType.Passenger, 2000, "cool brand", 1500, 2020, 50, new Driver("Bill", 30, Driver.Category.F), new List<Passenger> { new Passenger(22, "Alice", 21), new Passenger(25, "Cob", 21) });
             vehicles.Add(car);
             vehicles.Add(plane);
             DisplayVehicles();
         }
 
-        private void deleteButton_Click(object sender, EventArgs e)
+        private void DeleteButton_Click(object sender, EventArgs e)
         {
             if (DialogResult.No == MessageBox.Show("Are you sure?", "Delete vehicle", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 return;
@@ -119,7 +119,7 @@ namespace OOP_Application
         private void CreatePlugins()
         {
             plugins = new Dictionary<string, IArchiverPlugin>();
-            /*string rootDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
+            string rootDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\.."));
             string[] binDirectories = Directory.GetDirectories(rootDirectory, "bin", SearchOption.AllDirectories);
             foreach (string binDirectory in binDirectories)
             {
@@ -138,8 +138,8 @@ namespace OOP_Application
                         }
                     }
                 }
-            }*/
-            string[] pluginFiles = Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"), "*.dll", SearchOption.TopDirectoryOnly);
+            }
+            /*string[] pluginFiles = Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"), "*.dll", SearchOption.TopDirectoryOnly);
             foreach (string pluginFile in pluginFiles)
             {
                 Assembly pluginAssembly = Assembly.LoadFile(pluginFile);
@@ -152,10 +152,10 @@ namespace OOP_Application
                         plugins.Add(plugin.Extension.Trim('*'), plugin);
                     }
                 }
-            }
+            }*/
         }
 
-        private void openMenuItem_Click(object sender, EventArgs e)
+        private void OpenMenuItem_Click(object sender, EventArgs e)
         {
             CreatePlugins();
             openFileDialog.Filter = GetFileFilter();
@@ -169,30 +169,29 @@ namespace OOP_Application
             var serializerType = (SerializationType)(openFileDialog.FilterIndex - 1);
             SerializerFactory serializerFactory = (SerializerFactory)Activator.CreateInstance(serializers[serializerType]);
             ISerializer serializer = serializerFactory.CreateSerializer();
-            FileStream fileStream = new FileStream(fileName, FileMode.Open);
-            bool wasArhived = true;
-            try
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                fileStream = plugins[Path.GetExtension(fileName)].Decompress(fileStream);
-            }
-            catch (KeyNotFoundException)
-            {
-                wasArhived = false;
-            }
-            try
-            {
-                vehicles = serializer.Deserialize(fileStream);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error in file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            } 
-            finally 
-            {
-                fileStream.Close();
-                if (wasArhived)
-                    File.Delete(fileStream.Name);
+                using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
+                {
+                    fileStream.CopyTo(memoryStream);
+                }
+                try
+                {
+                    plugins[Path.GetExtension(fileName)].Decompress(memoryStream);
+                }
+                catch (KeyNotFoundException)
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                }
+                try
+                {
+                    vehicles = serializer.Deserialize(memoryStream);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error in file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
             DisplayVehicles();
         }
@@ -209,14 +208,14 @@ namespace OOP_Application
                 string serializerExtension = serializerAttribute[1];
                 foreach (var plugin in plugins)
                 {
-                    serializerExtension +=  ";" + plugin.Value.Extension;
+                    serializerExtension +=  ";" + serializerAttribute[1] + plugin.Value.Extension.Trim('*');
                 }
                 filter += serializerName + '|' + serializerExtension + '|';
             }
             return filter.Remove(filter.Length - 1, 1);
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CreatePlugins();
             saveFileDialog.Filter = GetFileFilter();
@@ -233,11 +232,8 @@ namespace OOP_Application
                 {
                     plugins[Path.GetExtension(fileName)].Compress(fileStream);
                 }
-                catch (KeyNotFoundException)
-                {
-                }
+                catch (KeyNotFoundException) { }
             }
         }
     }
-
 }

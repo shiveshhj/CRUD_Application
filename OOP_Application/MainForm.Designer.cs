@@ -80,7 +80,7 @@ namespace OOP_Application
             this.editButton.TabIndex = 6;
             this.editButton.Text = "Edit";
             this.editButton.UseVisualStyleBackColor = false;
-            this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            this.editButton.Click += new System.EventHandler(this.EditButton_Click);
             // 
             // deleteButton
             // 
@@ -94,7 +94,7 @@ namespace OOP_Application
             this.deleteButton.TabIndex = 5;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = false;
-            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            this.deleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // viewButton
             // 
@@ -108,7 +108,7 @@ namespace OOP_Application
             this.viewButton.TabIndex = 4;
             this.viewButton.Text = "View";
             this.viewButton.UseVisualStyleBackColor = false;
-            this.viewButton.Click += new System.EventHandler(this.viewButton_Click);
+            this.viewButton.Click += new System.EventHandler(this.ViewButton_Click);
             // 
             // addButton
             // 
@@ -120,7 +120,7 @@ namespace OOP_Application
             this.addButton.TabIndex = 3;
             this.addButton.Text = "Add vehicle";
             this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            this.addButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
             // panel2
             // 
@@ -169,7 +169,7 @@ namespace OOP_Application
             this.vehiclesGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.vehiclesGV.Size = new System.Drawing.Size(812, 320);
             this.vehiclesGV.TabIndex = 2;
-            this.vehiclesGV.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.vehiclesGV_CellEnter);
+            this.vehiclesGV.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.VehiclesGV_CellEnter);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -264,7 +264,7 @@ namespace OOP_Application
             this.openMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openMenuItem.Size = new System.Drawing.Size(233, 26);
             this.openMenuItem.Text = "Open";
-            this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
+            this.openMenuItem.Click += new System.EventHandler(this.OpenMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -272,7 +272,7 @@ namespace OOP_Application
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(233, 26);
             this.saveAsToolStripMenuItem.Text = "Save as...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItem_Click);
             // 
             // MainForm
             // 

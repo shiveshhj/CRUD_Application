@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.IO.Pipes;
 
 namespace ZipArchiverPlugin
 {
@@ -21,26 +22,19 @@ namespace ZipArchiverPlugin
             }
         }
 
-        public FileStream Decompress(FileStream archiveStream)
+        public void Decompress(MemoryStream archiveStream)
         {
             using (ZipArchive archive = new ZipArchive(archiveStream, ZipArchiveMode.Read, true))
             {
                 ZipArchiveEntry entry = archive.Entries[0];
-                using (MemoryStream memoryStream = new MemoryStream())
+                using (Stream stream = entry.Open())
                 {
-                    using (Stream stream = entry.Open())
-                    {
-                        stream.CopyTo(memoryStream);
-                    }
-                    string fileName = entry.Name;
-                    var output = new FileStream(Path.GetTempFileName(), FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-                    output.Write(memoryStream.ToArray(), 0, (int)memoryStream.Length);
-                    output.Seek(0, SeekOrigin.Begin);
-                    archiveStream.Close();
-                    return output;
+                    archiveStream.Seek(0, SeekOrigin.Begin);
+                    archiveStream.SetLength(entry.Length);
+                    stream.CopyTo(archiveStream);
                 }
+                archiveStream.Seek(0, SeekOrigin.Begin);
             }
         }
-
     }
 }

@@ -24,16 +24,19 @@ namespace GZipArchiverPlugin
             }
         }
 
-        public FileStream Decompress(FileStream compressedStream)
+        public void Decompress(MemoryStream archiveStream)
         {
-            string tempFilePath = Path.GetTempFileName();
-            FileStream tempFileStream = new FileStream(tempFilePath, FileMode.Create);
-            using (GZipStream gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+            archiveStream.Seek(0, SeekOrigin.Begin);
+            using (var gzip = new GZipStream(archiveStream, CompressionMode.Decompress, leaveOpen: true))
             {
-                gzipStream.CopyTo(tempFileStream);
+                var unpackedStream = new MemoryStream();
+                gzip.CopyTo(unpackedStream);
+                unpackedStream.Seek(0, SeekOrigin.Begin);
+                archiveStream.SetLength(unpackedStream.Length);
+                archiveStream.Seek(0, SeekOrigin.Begin);
+                unpackedStream.CopyTo(archiveStream);
             }
-            tempFileStream.Seek(0, SeekOrigin.Begin);
-            return tempFileStream;
+            archiveStream.Seek(0, SeekOrigin.Begin);
         }
     }
     
