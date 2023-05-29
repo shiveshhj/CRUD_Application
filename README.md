@@ -10,6 +10,7 @@ Key technologies that have been implemented:
 * Data serialization/deserialization using Xml and Binary libraries as well as my own text format
 * Arichiving plugins that are being loaded to the program while it's running
 * Factory method for creating objects, serializers and archivers that promotes code extensibility
+* Unit testing using NUnit Framework
 
 ![image](https://github.com/HaidukEvgen/OOP_Application/assets/92396956/2b00d369-a99e-42e2-a616-6b0703f36e98)
 
