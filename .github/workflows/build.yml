@@ -1,41 +1,48 @@
-name: Build MSI via WiX
+name: Build MSI
+
 on:
-  workflow_dispatch:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build-msi:
+  build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install WiX Toolset 4 (via dotnet tool)
-        run: |
-          dotnet tool install --global wix
-          echo "::add-path::$HOME/.dotnet/tools"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: Generate MSI
+      - name: Build application
+        run: dotnet build --configuration Release
+
+      - name: Install WiX Toolset
         run: |
-          # If using WiXSharp scripts:
-          # dotnet run --project OOP_Application/OOP_Application.csproj --configuration Release
-          # Or if using .wixproj:
-          # msbuild path/to/YourSetup.wixproj /p:Configuration=Release
-          
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
-        
-      - name: Restore NuGet packages
-        uses: NuGet/setup-nuget@v1
-        
-      - name: Build solution
-        run: msbuild OOP_Application.sln -p:Configuration=Release
+          choco install wixtoolset --version=3.11.2 --no-progress
+        shell: powershell
+
+      - name: Add WiX to PATH
+        run: |
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+        shell: powershell
+
+      - name: Create MSI (compile with candle and light)
+        run: |
+          candle Product.wxs
+          light Product.wixobj -o CRUD_Application.msi
 
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
         with:
-          name: installer
-          path: '**/bin/Release/*.msi'
+          name: MSI-Package
+          path: CRUD_Application.msi
