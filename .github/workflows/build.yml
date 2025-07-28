@@ -22,17 +22,22 @@ jobs:
           dotnet tool install --global wix
           echo "::add-path::$HOME/.dotnet/tools"
 
-      - name: Restore & build solution
-        run: |
-          dotnet restore
-          dotnet build --configuration Release
 
       - name: Generate MSI
         run: |
           # If using WiXSharp scripts:
-          dotnet run --project OOP_Application/OOP_Application.csproj --configuration Release
+          # dotnet run --project OOP_Application/OOP_Application.csproj --configuration Release
           # Or if using .wixproj:
           # msbuild path/to/YourSetup.wixproj /p:Configuration=Release
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+        
+      - name: Restore NuGet packages
+        uses: NuGet/setup-nuget@v1
+        
+      - name: Build solution
+        run: msbuild OOP_Application.sln -p:Configuration=Release
 
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
