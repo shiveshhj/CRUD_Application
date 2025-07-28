@@ -20,11 +20,14 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Install NuGet CLI
+        uses: nuget/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore OOP_Application/OOP_Application.csproj
 
       - name: Build application
-        run: dotnet build --configuration Release
+        run: msbuild OOP_Application/OOP_Application.csproj /p:Configuration=Release
 
       - name: Install WiX Toolset
         run: |
