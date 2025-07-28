@@ -1,0 +1,41 @@
+name: Build MSI via WiX
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-msi:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '4.7.2'
+
+      - name: Install WiX Toolset 4 (via dotnet tool)
+        run: |
+          dotnet tool install --global wix
+          echo "::add-path::$HOME/.dotnet/tools"
+
+      - name: Restore & build solution
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+
+      - name: Generate MSI
+        run: |
+          # If using WiXSharp scripts:
+          dotnet run --project OOP_Application/OOP_Application.csproj --configuration Release
+          # Or if using .wixproj:
+          # msbuild path/to/YourSetup.wixproj /p:Configuration=Release
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: '**/bin/Release/*.msi'
