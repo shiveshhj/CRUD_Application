@@ -24,7 +24,7 @@ jobs:
         uses: nuget/setup-nuget@v2
 
       - name: Restore NuGet packages
-        run: nuget restore OOP_Application/OOP_Application.csproj
+        run: nuget restore OOP_Application/OOP_Application.csproj -SolutionDirectory .
 
       - name: Build application
         run: msbuild OOP_Application/OOP_Application.csproj /p:Configuration=Release
